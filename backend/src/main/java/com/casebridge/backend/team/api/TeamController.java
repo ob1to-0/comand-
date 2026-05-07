@@ -7,6 +7,7 @@ import com.casebridge.backend.team.dto.UpdateTeamRequest;
 import com.casebridge.backend.team.service.CurrentUser;
 import com.casebridge.backend.team.service.TeamActivityService;
 import com.casebridge.backend.team.service.TeamService;
+import com.casebridge.backend.user.service.UserService;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TeamController {
     private final TeamService teamService;
     private final TeamActivityService teamActivityService;
+    private final UserService userService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -141,10 +143,12 @@ public class TeamController {
     }
 
     private CurrentUser buildUser(UUID userId, String userName, String userRole) {
-        return new CurrentUser(
+        CurrentUser currentUser = new CurrentUser(
                 userId,
                 userName,
                 CurrentUser.UserRole.valueOf(userRole.trim().toUpperCase())
         );
+        userService.sync(currentUser);
+        return currentUser;
     }
 }
